@@ -6,6 +6,12 @@ public class Neuron {
 	
 	Neuron[] prev;
 	
+	int[] weights;
+	
+	Integer output;
+	
+	int bias;
+	
 	
 	
 	public Neuron (Activation activate, Layer previous) {
@@ -13,6 +19,7 @@ public class Neuron {
 		
 		if(previous != null) {
 			this.prev = previous.neurons;
+			this.weights = new int[previous.neurons.length];
 		}
 	}
 	
@@ -22,7 +29,14 @@ public class Neuron {
 	}
 	
 	public int computeNetInput() {
-		return 0;
+		int netInput = 0;
+		for(int inp=0;inp<prev.length;inp++) {
+			if(prev[inp].output == null) {
+				throw new NullPointerException("The output of neuron number "+inp+" is not yet initialized.");
+			}
+			netInput += prev[inp].output*weights[inp];
+		}
+		return netInput;
 	}
 	
 	
