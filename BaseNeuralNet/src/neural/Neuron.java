@@ -1,12 +1,15 @@
 package neural;
 
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+
 public class Neuron {
 	
 	Activation act;
 	
 	Neuron[] prev;
 	
-	int[] weights;
+	double[] weights;
 	
 	Integer output;
 	
@@ -19,7 +22,17 @@ public class Neuron {
 		
 		if(previous != null) {
 			this.prev = previous.neurons;
-			this.weights = new int[previous.neurons.length];
+			this.weights = new double[previous.neurons.length];
+		}
+		
+		Random r = new Random();
+		
+		int curNeurons = 0;
+		
+		for(int weigh = 0; weigh<weights.length; weigh++) {
+			
+			// He/Kaimin Initialization based on Normal distribution with number of inputs as variance
+			weights[weigh] = r.nextGaussian()*(2/Math.sqrt(this.weights.length));
 		}
 	}
 	
