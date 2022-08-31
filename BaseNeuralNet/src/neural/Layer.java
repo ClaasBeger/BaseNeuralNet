@@ -2,24 +2,22 @@ package neural;
 
 public class Layer {
 
-	public Neuron[] neurons;
+	public Unit[] neurons;
 
 	public final String name;
 
-	public final boolean isFirst;
+	public boolean isFirst;
 
-	public final boolean isLast;
+	public boolean isLast;
 
-	public Layer(Neuron[] neur, String nam, boolean first, boolean last) {
-		this.neurons = neur;
-		this.name = nam;
-		this.isFirst = first;
-		this.isLast = last;
-	}
 	
-	public Layer(int NeuronCount, String nam, boolean first, boolean last, Activation activate, Layer pre) {
+	public Layer(int NeuronCount, String nam, Activation activate, Layer pre) {
 		
 		Neuron[] createdNeurons = new Neuron[NeuronCount];
+		
+		this.isFirst = false;
+		
+		this.isLast = false;
 		
 		for(int k=0; k<NeuronCount; k++) {
 			createdNeurons[k] = new Neuron(activate, pre, null);
@@ -27,13 +25,16 @@ public class Layer {
 		
 		this.neurons = createdNeurons;
 		this.name = nam;
-		this.isFirst = first;
-		this.isLast = last;
+	}
+	
+	public Layer(Unit[] units, String nam) {
+		this.neurons = units;
+		this.name = nam;
 	}
 
 	public boolean fullyConnectTo(Layer prev) {
 		for (int curr = 0; curr < neurons.length; curr++) {
-				if (!neurons[curr].connectTo(prev)) {
+				if (!((Neuron) neurons[curr]).connectTo(prev)) {
 					return false;
 			}
 		}
@@ -42,7 +43,7 @@ public class Layer {
 	
 	public boolean computeLayer() {
 	     for(int i = 0; i<this.neurons.length; i++) {
-	    	 if(!neurons[i].compute()) {
+	    	 if(!((Neuron) neurons[i]).compute()) {
 	    		 return false;
 	    	 }
 	     }

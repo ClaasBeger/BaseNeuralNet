@@ -3,15 +3,13 @@ package neural;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Neuron {
+public class Neuron extends Unit{
 
 	Activation act;
 
-	Neuron[] prev;
+	Unit[] prev;
 
 	double[] weights;
-
-	Double output;
 
 	double threshweight;
 
@@ -20,7 +18,7 @@ public class Neuron {
 		this.act = activate;
 
 		if (previous != null) {
-			this.prev = previous.neurons;
+			this.prev = (Neuron[]) previous.neurons;
 			this.weights = new double[previous.neurons.length];
 		}
 
@@ -44,9 +42,10 @@ public class Neuron {
 			}
 		}
 	}
+	
 
 	public boolean connectTo(Layer pre) {
-		this.prev = pre.neurons;
+		this.prev = (Neuron[]) pre.neurons;
 		return true;
 	}
 
