@@ -18,7 +18,7 @@ public class Neuron extends Unit{
 		this.act = activate;
 
 		if (previous != null) {
-			this.prev = (Neuron[]) previous.neurons;
+			this.prev = previous.neurons;
 			this.weights = new double[previous.neurons.length];
 		}
 
@@ -28,18 +28,18 @@ public class Neuron extends Unit{
 
 		for (int weigh = 0; weigh < weights.length; weigh++) {
 
-			if (initialization.contentEquals("Xavier")) {
+			// Default initialization
+		    if (initialization == null || initialization.contentEquals("Kaimin")
+								|| initialization.contentEquals("He")) {
+							// He/Kaimin Initialization based on ~N(0,2/sqrt(n))
+							weights[weigh] = r.nextGaussian() * (2 / Math.sqrt(this.weights.length));
+						}
+		    else if (initialization.contentEquals("Xavier")) {
 				// Weight initialization ~U(-1/sqrt(n), 1/sqrt(n))
 				weights[weigh] = r.nextDouble() * (2 * (1 / Math.sqrt(this.weights.length)))
 						- (1 / Math.sqrt(this.weights.length));
 			}
 
-			// Default initialization
-			else if (initialization.contentEquals("He") || initialization.contentEquals("Kaimin")
-					|| initialization == null) {
-				// He/Kaimin Initialization based on ~N(0,2/sqrt(n))
-				weights[weigh] = r.nextGaussian() * (2 / Math.sqrt(this.weights.length));
-			}
 		}
 	}
 	

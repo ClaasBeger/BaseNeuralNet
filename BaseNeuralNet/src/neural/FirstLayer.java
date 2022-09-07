@@ -2,9 +2,9 @@ package neural;
 
 public class FirstLayer extends Layer {
 
-	public FirstLayer(int NeuronCount, String nam, Activation activate, Layer pre) {
+	public FirstLayer(String nam, Unit[] units) {
 		
-		super(NeuronCount, nam, activate, pre);
+		super(units, nam);
 		
 		this.isFirst = true;
 		
