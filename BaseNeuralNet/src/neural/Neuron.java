@@ -12,6 +12,8 @@ public class Neuron extends Unit{
 	double[] weights;
 
 	double threshweight;
+	
+	double error;
 
 	public Neuron(Activation activate, Layer previous, String initialization) {
 
@@ -50,13 +52,14 @@ public class Neuron extends Unit{
 	}
 
 	public double computeNetInput() {
-		int netInput = 0;
+		double netInput = 0;
 		for (int inp = 0; inp < prev.length; inp++) {
 			if (prev[inp].output == null) {
 				throw new NullPointerException("The output of neuron number " + inp + " is not yet initialized.");
 			}
 			netInput += prev[inp].output * weights[inp];
 		}
+		this.netInput = netInput;
 		return netInput + threshweight;
 	}
 
@@ -89,6 +92,22 @@ public class Neuron extends Unit{
 			return false;
 		}
 		return true;
+	}
+	
+	public double computeError(double actual) {
+		
+		//TODO: Add gradient descent functionality
+		
+		this.error = this.output-actual;
+		return this.error;
+	}
+	
+	public boolean backpropagate() {
+		for(int i = 0; i<prev.length;i++) {
+			this.prev[i].backInput = this.weights[i]*this.error;
+		}
+		
+		return false;
 	}
 
 }
