@@ -14,7 +14,7 @@ public class Model {
 		FirstLayer first = new FirstLayer("IN", units);
 		Layer second = new Layer(8, "HID_1", Activation.RELU, first);
 		Layer third = new Layer(5, "HID_2", Activation.RELU, second);
-		Layer out = new Layer(1, "OUT", Activation.SIGMOID, third);
+		Layer out = new OutputLayer(1, "OUT", Activation.SIGMOID, third);
 		
 		//Setting the input
 		((InputUnit) first.neurons[0]).setInput(5.0);

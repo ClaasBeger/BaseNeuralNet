@@ -1,6 +1,6 @@
 package neural;
 
-public class Unit {
+public abstract class Unit {
 	
 	Double output;
 	

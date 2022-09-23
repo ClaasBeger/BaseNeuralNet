@@ -1,27 +1,39 @@
 package neural;
 
 import java.util.Random;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Neuron extends Unit{
-
+	
+	//TODO: Create a suitable logger and transition current prints to it (including importance specification)
+	
 	Activation act;
 
 	Unit[] prev;
+	
+	Layer prevLayer;
 
 	double[] weights;
 
 	double threshweight;
 	
 	double error;
+	
+	Layer current;
 
-	public Neuron(Activation activate, Layer previous, String initialization) {
+	public Neuron(Layer curr, Activation activate, Layer previous, String initialization) {
+		
+		this.current = curr;
+		
+		
 
 		this.act = activate;
 
 		if (previous != null) {
 			this.prev = previous.neurons;
 			this.weights = new double[previous.neurons.length];
+			this.prevLayer = previous;
 		}
 
 		Random r = new Random();
@@ -72,7 +84,11 @@ public class Neuron extends Unit{
 				return 0.01 * netInput;
 			}
 		} else if (this.act.equals(Activation.SIGMOID)) {
-			// TODO: Print out a warning if this is not the last(/Output) layer
+
+			if(!this.current.isLast) {
+				System.out.println("WARNING: Sigmoid activation should not be used outside of the output layer because of gradient saturation!");
+			}
+			
 			return (1 / (1 + Math.exp(-netInput)));
 		} else if (this.act.equals(Activation.HYPERBOLIC_TANGENT)) {
 			return ((Math.exp(netInput) - Math.exp(-netInput)) / (Math.exp(netInput) + Math.exp(-netInput)));
@@ -94,20 +110,47 @@ public class Neuron extends Unit{
 		return true;
 	}
 	
-	public double computeError(double actual) {
-		
-		//TODO: Add gradient descent functionality
-		
-		this.error = this.output-actual;
-		return this.error;
-	}
-	
-	public boolean backpropagate() {
-		for(int i = 0; i<prev.length;i++) {
-			this.prev[i].backInput = this.weights[i]*this.error;
+	public double computeError(double actual) throws Exception {
+
+		// TODO: Add gradient descent functionality
+
+		if (this.current.isLast) {
+			this.error = this.output - actual;
+			
+		}
+		else {
+			
+			// TODO: Customize exception type
+			
+			throw new Exception("Error should only be computed on output unit and then propagated further, not computed on hidden units");
 		}
 		
+		return this.error;
+	}
+
+	public boolean backpropagate() {
+		for (int i = 0; i < prev.length; i++) {
+			this.prev[i].backInput = this.weights[i] * this.error;
+		}
+
 		return false;
+	}
+	
+	public double gradient(double x) {
+		if(this.act == Activation.SIGMOID) {
+			return (1/(1+Math.exp(-x)))*(1-(1/(1+Math.exp(-x))));
+		}
+		if(this.act == Activation.RELU) {
+			return (x>0) ? 1 : 0;
+		}
+		if(this.act == Activation.LEAKY_RELU) {
+			return (x>0) ? 1 : 0.01;
+		}
+		if(this.act == Activation.HYPERBOLIC_TANGENT) {
+			return 1/Math.pow(Math.cosh(x), 2);
+		}
+		System.out.println("Activation Function not covered, setting Gradient to zero.");
+		return 0;
 	}
 
 }

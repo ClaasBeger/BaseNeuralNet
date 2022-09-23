@@ -20,7 +20,7 @@ public class Layer {
 		this.isLast = false;
 		
 		for(int k=0; k<NeuronCount; k++) {
-			createdNeurons[k] = new Neuron(activate, pre, null);
+			createdNeurons[k] = new Neuron(this, activate, pre, null);
 		}
 		
 		this.neurons = createdNeurons;
