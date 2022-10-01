@@ -17,9 +17,9 @@ public class Model {
 		Layer out = new OutputLayer(1, "OUT", Activation.SIGMOID, third);
 		
 		//Setting the input
-		((InputUnit) first.neurons[0]).setInput(5.0);
-		((InputUnit) first.neurons[1]).setInput(0.0);
-		((InputUnit) first.neurons[2]).setInput(3.0);
+		((InputUnit) first.neurons[0]).setInput(1.0);
+		((InputUnit) first.neurons[1]).setInput(2.0);
+		((InputUnit) first.neurons[2]).setInput(1.5);
 		
 		//Computing the layers
 		second.computeLayer();
@@ -38,8 +38,19 @@ public class Model {
 			System.out.println(Arrays.toString(((Neuron)n).weights));
 		});
 		
+		out.computeBackProp(1);
+		third.computeBackProp();
+		second.computeBackProp();
+		
+		
 		System.out.println("Net Input " + out.neurons[0].netInput);
 		System.out.println("Result: " +out.neurons[0].output);
+		
+		System.out.println(((Neuron)out.neurons[0]).error);
+		System.out.println(third.neurons[0].backInput);
+		System.out.println(second.neurons[0].backInput);
+		System.out.println(first.neurons[0].backInput);
+		
 	}
 
 }

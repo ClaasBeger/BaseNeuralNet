@@ -4,29 +4,28 @@ import java.util.Random;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Neuron extends Unit{
-	
-	//TODO: Create a suitable logger and transition current prints to it (including importance specification)
-	
+public class Neuron extends Unit {
+
+	// TODO: Create a suitable logger and transition current prints to it (including
+	// importance specification)
+
 	Activation act;
 
 	Unit[] prev;
-	
+
 	Layer prevLayer;
 
 	double[] weights;
 
 	double threshweight;
-	
+
 	double error;
-	
+
 	Layer current;
 
 	public Neuron(Layer curr, Activation activate, Layer previous, String initialization) {
-		
+
 		this.current = curr;
-		
-		
 
 		this.act = activate;
 
@@ -43,12 +42,11 @@ public class Neuron extends Unit{
 		for (int weigh = 0; weigh < weights.length; weigh++) {
 
 			// Default initialization
-		    if (initialization == null || initialization.contentEquals("Kaimin")
-								|| initialization.contentEquals("He")) {
-							// He/Kaimin Initialization based on ~N(0,2/sqrt(n))
-							weights[weigh] = r.nextGaussian() * (2 / Math.sqrt(this.weights.length));
-						}
-		    else if (initialization.contentEquals("Xavier")) {
+			if (initialization == null || initialization.contentEquals("Kaimin")
+					|| initialization.contentEquals("He")) {
+				// He/Kaimin Initialization based on ~N(0,2/sqrt(n))
+				weights[weigh] = r.nextGaussian() * (2 / Math.sqrt(this.weights.length));
+			} else if (initialization.contentEquals("Xavier")) {
 				// Weight initialization ~U(-1/sqrt(n), 1/sqrt(n))
 				weights[weigh] = r.nextDouble() * (2 * (1 / Math.sqrt(this.weights.length)))
 						- (1 / Math.sqrt(this.weights.length));
@@ -56,7 +54,6 @@ public class Neuron extends Unit{
 
 		}
 	}
-	
 
 	public boolean connectTo(Layer pre) {
 		this.prev = (Neuron[]) pre.neurons;
@@ -85,10 +82,11 @@ public class Neuron extends Unit{
 			}
 		} else if (this.act.equals(Activation.SIGMOID)) {
 
-			if(!this.current.isLast) {
-				System.out.println("WARNING: Sigmoid activation should not be used outside of the output layer because of gradient saturation!");
+			if (!this.current.isLast) {
+				System.out.println(
+						"WARNING: Sigmoid activation should not be used outside of the output layer because of gradient saturation!");
 			}
-			
+
 			return (1 / (1 + Math.exp(-netInput)));
 		} else if (this.act.equals(Activation.HYPERBOLIC_TANGENT)) {
 			return ((Math.exp(netInput) - Math.exp(-netInput)) / (Math.exp(netInput) + Math.exp(-netInput)));
@@ -109,45 +107,71 @@ public class Neuron extends Unit{
 		}
 		return true;
 	}
-	
+
 	public double computeError(double actual) throws Exception {
 
 		// TODO: Add gradient descent functionality
 
 		if (this.current.isLast) {
 			this.error = this.output - actual;
-			
-		}
-		else {
-			
+
+		} else {
+
 			// TODO: Customize exception type
-			
-			throw new Exception("Error should only be computed on output unit and then propagated further, not computed on hidden units");
+
+			throw new Exception(
+					"Error should only be computed on output unit and then propagated further, not computed on hidden units");
 		}
-		
+
 		return this.error;
 	}
 
 	public boolean backpropagate() {
-		for (int i = 0; i < prev.length; i++) {
-			this.prev[i].backInput = this.weights[i] * this.error;
+		if (this.current.isLast) {
+			for (int i = 0; i < prev.length; i++) {
+				this.prev[i].backInput = this.weights[i] * this.error;
+			}
+			return true;
 		}
-
-		return false;
+		else {
+			for (int c = 0; c < prev.length; c++) {
+				this.prev[c].backInput = this.gradient(this.output)*this.weights[c] * this.backInput;
+			}
+			return true;
+		}
 	}
 	
+	public boolean correctWeight(int stepSize, int index) {
+		
+		// TODO: Find a way to use the computed BackInput to correct the according weight
+		// using the stepSize parameter, issue is that the weights are only known rearwardly but 
+		// correction has to be done from the other side (this approach aims to pass index explicitly
+		// but this appears extremely inefficient to me (would be a kind of back-forth-back)
+		// Potentially make weights accessible from both sides or from the layer? Or include
+		// the correction process in the backpropagation direclty.
+		if(index==-1) {
+			for(int i = 0; i<this.prev.length; i++) {
+				
+			}
+		}
+		
+		
+		
+		return false;
+	}
+
 	public double gradient(double x) {
-		if(this.act == Activation.SIGMOID) {
-			return (1/(1+Math.exp(-x)))*(1-(1/(1+Math.exp(-x))));
+		if (this.act == Activation.SIGMOID) {
+			return (1 / (1 + Math.exp(-x))) * (1 - (1 / (1 + Math.exp(-x))));
 		}
-		if(this.act == Activation.RELU) {
-			return (x>0) ? 1 : 0;
+		if (this.act == Activation.RELU) {
+			return (x > 0) ? 1 : 0;
 		}
-		if(this.act == Activation.LEAKY_RELU) {
-			return (x>0) ? 1 : 0.01;
+		if (this.act == Activation.LEAKY_RELU) {
+			return (x > 0) ? 1 : 0.01;
 		}
-		if(this.act == Activation.HYPERBOLIC_TANGENT) {
-			return 1/Math.pow(Math.cosh(x), 2);
+		if (this.act == Activation.HYPERBOLIC_TANGENT) {
+			return 1 / Math.pow(Math.cosh(x), 2);
 		}
 		System.out.println("Activation Function not covered, setting Gradient to zero.");
 		return 0;

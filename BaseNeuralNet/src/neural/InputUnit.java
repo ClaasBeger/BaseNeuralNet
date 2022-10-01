@@ -7,5 +7,6 @@ public class InputUnit extends Unit {
 		this.netInput = input;
 		this.output = input;
 	}
+	
 
 }
