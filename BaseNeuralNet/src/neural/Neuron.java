@@ -141,23 +141,21 @@ public class Neuron extends Unit {
 		}
 	}
 	
-	public boolean correctWeight(int stepSize, int index) {
+	public boolean correctWeight(int stepSize, int prevErr, int index) {
+		
+		// Index here is supposed to be the index of the neuron as of its entry in the weight array. 
+		// This hopefully can be found out by the previous neuron before calling this function by 
+		// scanning the array of the layer object and searching for equivalence
 		
 		// TODO: Find a way to use the computed BackInput to correct the according weight
 		// using the stepSize parameter, issue is that the weights are only known rearwardly but 
 		// correction has to be done from the other side (this approach aims to pass index explicitly
 		// but this appears extremely inefficient to me (would be a kind of back-forth-back)
 		// Potentially make weights accessible from both sides or from the layer? Or include
-		// the correction process in the backpropagation direclty.
-		if(index==-1) {
-			for(int i = 0; i<this.prev.length; i++) {
-				
-			}
-		}
+		// the correction process in the backpropagation directly.
 		
-		
-		
-		return false;
+		this.weights[index] = this.weights[index] + stepSize*prevErr;
+		return true;
 	}
 
 	public double gradient(double x) {
@@ -175,6 +173,30 @@ public class Neuron extends Unit {
 		}
 		System.out.println("Activation Function not covered, setting Gradient to zero.");
 		return 0;
+	}
+	
+	public boolean incenticizeCorrection() {
+		
+		// Somehow use rearward connection. We need to access weights from the front, because that is the only point where they are
+		// accessible. But we need the true derivated error from the back. Somehow combine both, to do weight correction either from the front+
+		// or from the back.
+		for(int i = 0; i<this.current.neurons.length; i++) {
+			if(this.backInput == 0) {
+				return false;
+			}
+			//incenticize backprop
+		}
+		return false;
+		
+	}
+	
+	public int computeIndex() {
+		for(int i=0; i<this.current.neurons.length; i++) {
+			if(this.current.neurons[i].equals(this)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 }
